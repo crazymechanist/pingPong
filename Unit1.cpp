@@ -13,6 +13,7 @@ int x=-8, y=-8;
 
 int left;
 int top;
+bool isAppPaused;
 
 int centerX(TShape *shape){
 return shape->Left + shape->Width/2;
@@ -189,7 +190,8 @@ Timer1->Enabled=true;
 void __fastcall TForm1::leftPaddleDownTimerTimer(TObject *Sender)
 {
 int margin = 10;
-if(downBorder(leftPaddle)<downBorder(background)-margin){
+if(downBorder(leftPaddle)<downBorder(background)-margin
+&& !isAppPaused){
 leftPaddle->Top+=10;
 }
 }
@@ -198,7 +200,8 @@ leftPaddle->Top+=10;
 void __fastcall TForm1::leftPaddleUpTimerTimer(TObject *Sender)
 {
 int margin = 10;
-if(topBorder(leftPaddle)>topBorder(background)+margin){
+if(topBorder(leftPaddle)>topBorder(background)+margin
+&& !isAppPaused){
 leftPaddle->Top-=10;}
 }
 //---------------------------------------------------------------------------
@@ -212,5 +215,32 @@ Timer1->Enabled=False;
 
 
 
+
+
+void __fastcall TForm1::playClick(TObject *Sender)
+{
+if(ballTimer->Enabled==false){
+ballTimer->Enabled=true;
+isAppPaused=false;
+play->Visible=false;
+pause->Visible=true;}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::pauseClick(TObject *Sender)
+{
+if(ballTimer->Enabled==true){
+ballTimer->Enabled=false;
+isAppPaused=true;
+pause->Visible=false;
+play->Visible=true;}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::FormCreate(TObject *Sender)
+{
+isAppPaused=false;
+}
+//---------------------------------------------------------------------------
 
 
