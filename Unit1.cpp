@@ -9,7 +9,7 @@
 #pragma resource "*.dfm"
 TForm1 *Form1;
 
-int x=-8, y=-8;
+int x=10, y=0;
 
 int left;
 int top;
@@ -66,13 +66,16 @@ __fastcall TForm1::TForm1(TComponent* Owner)
 //---------------------------------------------------------------------------
 
 void __fastcall TForm1::ballTimerTimer(TObject *Sender)
-{
+{       if(x<-30)x=-30;
+        if(x>-5 && x<0)x=-5;
+        if(x>30)x=30;
+        if(x<5 && x>0)x=5;
     ball->Left+=x; ball->Top+=y;
 
     int margin =3;
 
     //podazaj za pilka
-    rightPaddle->Top=ball->Top-(rightPaddle->Height - ball->Height)/2;
+    //rightPaddle->Top=ball->Top-(rightPaddle->Height - ball->Height)/2;
 
     //jezeli pilka poza zakresem z lewej
     if(leftBorder(ball) < leftBorder(background)- 4*margin){
@@ -81,7 +84,7 @@ void __fastcall TForm1::ballTimerTimer(TObject *Sender)
 
     //jezeli pilka poza zakresem z prawej
         if(rightBorder(ball) >= rightBorder(background)+ 4*margin){
-    ball->Left= rightBorder(background) - 2*ball->Width;
+    //ball->Left= rightBorder(background) - 2*ball->Width;
     }
 
     //jezeli pilka poza zakresem z gory
@@ -109,32 +112,52 @@ void __fastcall TForm1::ballTimerTimer(TObject *Sender)
 
    //odbicie od prawej paletki
    if(leftBorder(rightPaddle) <= rightBorder(ball)
-   && leftBorder(rightPaddle) + 3* margin >= rightBorder(ball)
+   && leftBorder(rightPaddle) + 10* margin >= rightBorder(ball)
    && topBorder(ball)<downBorder(rightPaddle)
-   && downBorder(ball)>topBorder(rightPaddle)) {
-   x=-8;
+   && downBorder(ball)>topBorder(rightPaddle)){
+        if(centerY(ball)>centerY(rightPaddle)-.15*rightPaddle->Height
+        && centerY(ball)<centerY(rightPaddle)+.15*rightPaddle->Height){
+        x=-x;
+        x-=3;
+                if(y<0) y=-4;
+                else y=4;
+        }
+        else if(centerY(ball)>centerY(rightPaddle)-.45*rightPaddle->Height
+        && centerY(ball)<centerY(rightPaddle)+.45*rightPaddle->Height){
+        x=-x;
+        x-=1;
+                if(y<0) y=-8;
+                else y=8;
+        }
+        else{
+        x=-x;
+        y=-y;
+        }
    }
 
    //odbicie od lewej paletki
    if(rightBorder(leftPaddle) >= leftBorder(ball)
-   && rightBorder(leftPaddle) - 3* margin <= leftBorder(ball)
+   && rightBorder(leftPaddle) - 10* margin <= leftBorder(ball)
    && topBorder(ball)<downBorder(leftPaddle)
    && downBorder(ball)>topBorder(leftPaddle)){
         if(centerY(ball)>centerY(leftPaddle)-.15*leftPaddle->Height
         && centerY(ball)<centerY(leftPaddle)+.15*leftPaddle->Height){
-        x=16;
-                if(y<0) y=4;
-                else y=-4;
+        x=-x;
+        x+=3;
+                if(y<0) y=-4;
+                else y=4;
         }
         else if(centerY(ball)>centerY(leftPaddle)-.45*leftPaddle->Height
         && centerY(ball)<centerY(leftPaddle)+.45*leftPaddle->Height){
-        x=10;
-                if(y<0) y=8;
-                else y=-8;
+        x=-x;
+        x+=1;
+                if(y<0) y=-8;
+                else y=8;
         }
         else{
-        x=8;
-        y=-y;}
+        x=-x;
+        y=-y;
+        }
    }
 
 }
@@ -158,7 +181,6 @@ void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key,
 void __fastcall TForm1::FormResize(TObject *Sender)
 {
 ballTimer->Enabled=false;
-int offset=50;
 int left=background->Left;
 int top=background->Top;
 background->Left = (Form1->ClientWidth - background->Width)/2;
@@ -197,12 +219,33 @@ leftPaddle->Top+=10;
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TForm1::rightPaddleDownTimerTimer(TObject *Sender)
+{
+int margin = 10;
+if(downBorder(rightPaddle)<downBorder(background)-margin
+&& !isAppPaused){
+rightPaddle->Top+=8;
+}
+}
+//---------------------------------------------------------------------------
+
 void __fastcall TForm1::leftPaddleUpTimerTimer(TObject *Sender)
 {
 int margin = 10;
 if(topBorder(leftPaddle)>topBorder(background)+margin
-&& !isAppPaused){
+&& !isAppPaused
+&&centerX(ball)<rightBorder(background)-80){
 leftPaddle->Top-=10;}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::rightPaddleUpTimerTimer(TObject *Sender)
+{
+int margin = 10;
+if(topBorder(rightPaddle)>topBorder(background)+margin
+&& !isAppPaused
+&& centerX(ball)<rightBorder(background)-80){
+rightPaddle->Top-=8;}
 }
 //---------------------------------------------------------------------------
 
@@ -212,9 +255,6 @@ ballTimer->Enabled=True;
 Timer1->Enabled=False;
 }
 //---------------------------------------------------------------------------
-
-
-
 
 
 void __fastcall TForm1::playClick(TObject *Sender)
@@ -243,4 +283,17 @@ isAppPaused=false;
 }
 //---------------------------------------------------------------------------
 
+
+void __fastcall TForm1::rightPaddleMoveTimer(TObject *Sender)
+{
+if(centerX(ball)>centerX(background)){
+        if(centerY(ball)>centerY(rightPaddle)){
+        rightPaddleUpTimer->Enabled=false;
+        rightPaddleDownTimer->Enabled=true;
+        }else{
+        rightPaddleDownTimer->Enabled=false;
+        rightPaddleUpTimer->Enabled=true;
+}}
+}
+//---------------------------------------------------------------------------
 
