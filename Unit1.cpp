@@ -10,9 +10,9 @@
 TForm1 *Form1;
 
 int x=10, y=0;
+int pointsOfLeftPlayer;
+int pointsOfRightsPlayer;
 
-int left;
-int top;
 bool isAppPaused;
 
 int centerX(TShape *shape){
@@ -53,8 +53,29 @@ return shape->Top;
 int downBorder(TImage *image){
 return image->Top+image->Height;
 }
+
 int downBorder(TShape *shape){
 return shape->Top+shape->Height;
+}
+
+void __fastcall TForm1::newGame(){
+pointsOfLeftPlayer=0;
+pointsOfRightsPlayer=0;
+score->Caption = setScore(pointsOfLeftPlayer,pointsOfRightsPlayer);
+resetBallPosition();
+}
+
+void __fastcall TForm1::resetBallPosition(){
+ball->Left = centerX(background);
+ball->Top = centerY(background);
+ballTimer->Enabled=false;
+ballDelay->Enabled=true;
+if(x>0)x=-10;
+else x=10;
+}
+
+AnsiString setScore(int leftPoint, int rightPoint){
+return IntToStr(leftPoint) + " : " + IntToStr(rightPoint);
 }
 
 //---------------------------------------------------------------------------
@@ -97,17 +118,21 @@ void __fastcall TForm1::ballTimerTimer(TObject *Sender)
     ball->Top= downBorder(background) - 2*ball->Height;
     }
 
-    //odbij od lewej sciany
-    if (leftBorder(ball) <= leftBorder(background) + margin) x=-x;
+    //punkt po lewej
+    if (leftBorder(ball) <= leftBorder(background) + 2*margin) {
+     score->Caption = setScore(++pointsOfLeftPlayer,pointsOfRightsPlayer) ;
+     resetBallPosition();}
 
     //odbij od górnej sciany
-    if (topBorder(ball) <= topBorder(background)+margin) y=-y;
+    if (topBorder(ball) <= topBorder(background)+ 2*margin) y=-y;
 
     //odbij od dolnej sciany
-    if (downBorder(ball) >= downBorder(background)-margin) y=-y;
+    if (downBorder(ball) >= downBorder(background)-2*margin) y=-y;
 
-   //odbij od prawej sciany
-    if (rightBorder(ball) >= rightBorder(background) - margin) x=-x;
+   //punkt po prwaej
+    if (rightBorder(ball) >= rightBorder(background) - 2* margin) {
+     score->Caption = setScore(pointsOfLeftPlayer,++pointsOfRightsPlayer) ;
+     resetBallPosition();}
 
 
    //odbicie od prawej paletki
@@ -205,7 +230,7 @@ reset->Left+=background->Left-left;
 reset->Top+=background->Top-top;
 help->Left+=background->Left-left;
 help->Top+=background->Top-top;
-Timer1->Enabled=true;
+ballDelay->Enabled=true;
 }
 //---------------------------------------------------------------------------
 
@@ -224,7 +249,7 @@ void __fastcall TForm1::rightPaddleDownTimerTimer(TObject *Sender)
 int margin = 10;
 if(downBorder(rightPaddle)<downBorder(background)-margin
 && !isAppPaused){
-rightPaddle->Top+=8;
+rightPaddle->Top+=10;
 }
 }
 //---------------------------------------------------------------------------
@@ -245,14 +270,14 @@ int margin = 10;
 if(topBorder(rightPaddle)>topBorder(background)+margin
 && !isAppPaused
 && centerX(ball)<rightBorder(background)-80){
-rightPaddle->Top-=8;}
+rightPaddle->Top-=10;}
 }
 //---------------------------------------------------------------------------
 
-void __fastcall TForm1::Timer1Timer(TObject *Sender)
+void __fastcall TForm1::ballDelayTimer(TObject *Sender)
 {
 ballTimer->Enabled=True;
-Timer1->Enabled=False;
+ballDelay->Enabled=False;
 }
 //---------------------------------------------------------------------------
 
@@ -280,13 +305,15 @@ play->Visible=true;}
 void __fastcall TForm1::FormCreate(TObject *Sender)
 {
 isAppPaused=false;
+pointsOfLeftPlayer=0;
+pointsOfRightsPlayer=0;
 }
 //---------------------------------------------------------------------------
 
 
 void __fastcall TForm1::rightPaddleMoveTimer(TObject *Sender)
 {
-if(centerX(ball)>centerX(background)){
+if(centerX(ball)>centerX(background)-100){
         if(centerY(ball)>centerY(rightPaddle)){
         rightPaddleUpTimer->Enabled=false;
         rightPaddleDownTimer->Enabled=true;
