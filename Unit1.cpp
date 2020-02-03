@@ -14,6 +14,7 @@ int pointsOfLeftPlayer;
 int pointsOfRightsPlayer;
 
 bool isAppPaused;
+bool isStartFirst;
 
 int centerX(TShape *shape){
 return shape->Left + shape->Width/2;
@@ -58,12 +59,7 @@ int downBorder(TShape *shape){
 return shape->Top+shape->Height;
 }
 
-void __fastcall TForm1::newGame(){
-pointsOfLeftPlayer=0;
-pointsOfRightsPlayer=0;
-score->Caption = setScore(pointsOfLeftPlayer,pointsOfRightsPlayer);
-resetBallPosition();
-}
+
 
 void __fastcall TForm1::resetBallPosition(){
 ball->Left = centerX(background);
@@ -75,7 +71,14 @@ else x=10;
 }
 
 AnsiString setScore(int leftPoint, int rightPoint){
-return IntToStr(leftPoint) + " : " + IntToStr(rightPoint);
+return IntToStr(leftPoint) + ":" + IntToStr(rightPoint);
+}
+
+void __fastcall TForm1::newGame(){
+pointsOfLeftPlayer=0;
+pointsOfRightsPlayer=0;
+score->Caption = setScore(pointsOfLeftPlayer,pointsOfRightsPlayer);
+resetBallPosition();
 }
 
 //---------------------------------------------------------------------------
@@ -120,7 +123,7 @@ void __fastcall TForm1::ballTimerTimer(TObject *Sender)
 
     //punkt po lewej
     if (leftBorder(ball) <= leftBorder(background) + 2*margin) {
-     score->Caption = setScore(++pointsOfLeftPlayer,pointsOfRightsPlayer) ;
+     score->Caption = setScore(pointsOfLeftPlayer,++pointsOfRightsPlayer) ;
      resetBallPosition();}
 
     //odbij od górnej sciany
@@ -131,7 +134,7 @@ void __fastcall TForm1::ballTimerTimer(TObject *Sender)
 
    //punkt po prwaej
     if (rightBorder(ball) >= rightBorder(background) - 2* margin) {
-     score->Caption = setScore(pointsOfLeftPlayer,++pointsOfRightsPlayer) ;
+     score->Caption = setScore(++pointsOfLeftPlayer,pointsOfRightsPlayer) ;
      resetBallPosition();}
 
 
@@ -205,7 +208,7 @@ void __fastcall TForm1::FormKeyDown(TObject *Sender, WORD &Key,
 
 void __fastcall TForm1::FormResize(TObject *Sender)
 {
-ballTimer->Enabled=false;
+pauseClick(pause);
 int left=background->Left;
 int top=background->Top;
 background->Left = (Form1->ClientWidth - background->Width)/2;
@@ -230,7 +233,8 @@ reset->Left+=background->Left-left;
 reset->Top+=background->Top-top;
 help->Left+=background->Left-left;
 help->Top+=background->Top-top;
-ballDelay->Enabled=true;
+if(pause->Visible==true) playClick(play);
+if(isStartFirst==true)  {helpClick(help); isStartFirst=false;}
 }
 //---------------------------------------------------------------------------
 
@@ -307,6 +311,8 @@ void __fastcall TForm1::FormCreate(TObject *Sender)
 isAppPaused=false;
 pointsOfLeftPlayer=0;
 pointsOfRightsPlayer=0;
+pauseClick(pause);
+isStartFirst=true;
 }
 //---------------------------------------------------------------------------
 
@@ -322,5 +328,25 @@ if(centerX(ball)>centerX(background)-100){
         rightPaddleUpTimer->Enabled=true;
 }}
 }
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::resetClick(TObject *Sender)
+{
+newGame();
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::helpClick(TObject *Sender)
+{
+pauseClick(pause);
+Application->MessageBox("Witaj w grze PingPong.\n\nLewy gracz steruje wciskaj¹c strza³ki do góry i w dó³.\nPrawym graczem steruje komputer.\n\nDla urozmaicenia zabawy:\nKiedy d³u¿ej odbijesz pi³kê na œrodku paletki, wówczas zmienisz jej k¹t odbicia i pi³ka przyspieszy.\nSkraj paletki natomiast odbija pi³kê wtym kierunku z którego ona przyby³a. Mo¿esz zapauzowaæ grê ,\na tak¿e j¹ zresetowaæ. To okno wywo³uje siê znakiem zapytania.\nIm d³u¿ej odbijsz, tym pi³ka szybciej przemieszcza siê.\nPole gry jest sta³e.\n\nMi³ej zabawy!","Info",MB_ICONQUESTION);
+playClick(play);}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm1::settingsClick(TObject *Sender)
+{
+pauseClick(pause);
+Application->MessageBox("Tu jeszcze nic nie ma","Ustawienia");
+playClick(play);}
 //---------------------------------------------------------------------------
 
