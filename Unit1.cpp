@@ -16,50 +16,35 @@ int pointsOfRightsPlayer;
 bool isAppPaused;
 bool isStartFirst;
 
-int centerX(TShape *shape){
+template <class T>
+int centerX(T *shape){
 return shape->Left + shape->Width/2;
 }
-int centerX(TImage *image){
-return image->Left + image->Width/2;
-}
 
-int centerY(TShape *shape){
+template <class T>
+int centerY(T *shape){
 return shape->Top + shape->Height/2;
 }
-int centerY(TImage *image){
-return image->Top + image->Height/2;
-}
 
-int leftBorder(TImage *image){
-return image->Left;
-}
-int leftBorder(TShape *shape){
+template <class T>
+int leftBorder(T *shape){
 return shape->Left;
 }
 
-int rightBorder(TImage *image){
-return image->Left+image->Width;
-}
-int rightBorder(TShape *shape){
+template <class T>
+int rightBorder(T *shape){
 return shape->Left+shape->Width;
 }
 
-int topBorder(TImage *image){
+template <class T>
+int topBorder(T *image){
 return image->Top;
 }
-int topBorder(TShape *shape){
-return shape->Top;
-}
 
-int downBorder(TImage *image){
+template <class T>
+int downBorder(T *image){
 return image->Top+image->Height;
 }
-
-int downBorder(TShape *shape){
-return shape->Top+shape->Height;
-}
-
-
 
 void __fastcall TForm1::resetBallPosition(){
 ball->Left = centerX(background);
