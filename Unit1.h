@@ -25,7 +25,7 @@ __published:	// IDE-managed Components
         TTimer *rightPaddleUpTimer;
         TTimer *rightPaddleDownTimer;
         TLabel *score;
-        TTimer *Timer1;
+        TTimer *ballDelay;
         TImage *pause;
         TImage *play;
         TImage *reset;
@@ -41,13 +41,18 @@ __published:	// IDE-managed Components
         void __fastcall FormResize(TObject *Sender);
         void __fastcall leftPaddleDownTimerTimer(TObject *Sender);
         void __fastcall leftPaddleUpTimerTimer(TObject *Sender);
-        void __fastcall Timer1Timer(TObject *Sender);
+        void __fastcall ballDelayTimer(TObject *Sender);
         void __fastcall playClick(TObject *Sender);
         void __fastcall pauseClick(TObject *Sender);
         void __fastcall FormCreate(TObject *Sender);
         void __fastcall rightPaddleDownTimerTimer(TObject *Sender);
         void __fastcall rightPaddleUpTimerTimer(TObject *Sender);
         void __fastcall rightPaddleMoveTimer(TObject *Sender);
+        void __fastcall resetBallPosition();
+        void __fastcall newGame();
+        void __fastcall resetClick(TObject *Sender);
+        void __fastcall helpClick(TObject *Sender);
+        void __fastcall settingsClick(TObject *Sender);
 private:	// User declarations
 public:		// User declarations
         __fastcall TForm1(TComponent* Owner);
